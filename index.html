@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Furve Cleaver</title>
+    <link href="https://fonts.googleapis.com/css?family=Antic+Slab" rel="stylesheet">
+  </head>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.js"></script>
+
+  <body>
+
+    <div class="container">
+      <div id="curveArena">
+      </div>
+      <div>
+        <button onclick="start(2)">Start</button>
+      </div>
+    </div>
+
+    <style>
+      .container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+    </style>
+  </body>
+
+  <script>
+    var game = {
+      canvas_dimension: 600,
+    }
+
+    function setup() {
+      canvas = createCanvas(game.canvas_dimension, game.canvas_dimension);
+      colorMode(HSB);
+      background('black');
+      canvas.parent('curveArena');
+    }
+
+    var players = [];
+
+    var player = {
+      speed: [1, 1],
+      angle: [2, 2],
+
+      keys: ['LEFT_ARROW','RIGHT_ARROW','Q','S'],
+      keys_code: [[37,39],[81,83]],
+
+      player_colour: ["red", "blue"],
+      player_width: [10, 10],
+
+      started: false,
+    }
+
+    function start(num_players) {
+
+      if (player.started==false) {
+        players = [];
+          for (var i=0;i<num_players;i++) {
+            x = Math.floor(Math.random() * 0.8*game.canvas_dimension) + 1;
+            y = Math.floor(Math.random() * 0.8*game.canvas_dimension) + 1;
+            angle = Math.floor(Math.random() * 360);
+            // x = -0.8*game.canvas_dimension
+            // y = -0.8*game.canvas_dimension
+            // angle = 90
+            line_tmp = new Line(x,y);
+            line_tmp.add_position(x+player.speed[i],y+player.speed[i]);
+            line_tmp.move(angle);
+            players.push(line_tmp);
+          }
+
+          player.started = true;
+        }
+      }
+
+    function draw() {
+      if (player.started)
+      {
+        for (var i=0;i<players.length;i++)
+        {
+          if (keyIsDown(player.keys_code[i][0])) {
+            players[i].move(-player.angle[i]* Math.PI / 180);
+          }
+          else if (keyIsDown(player.keys_code[i][1])) {
+            players[i].move(player.angle[i]* Math.PI / 180);
+          }
+          else {
+            players[i].move(0);
+          }
+        }
+        var lose = Line.is_ended(players);
+        if (lose != -1)
+        {
+          player.started = false;
+        }
+        Line.display_lines(players);
+      }
+    }
+
+    class Line{
+      constructor(a,b){
+        this.array=[];
+        this.array.push([a,b]);
+      }
+
+      add_position(a,b){
+        this.array.push([a,b]);
+      }
+
+    // the only thing needed to move is the angle
+      move(angle)
+      {
+        var a=this.array[this.array.length-2];
+        var b=this.array[this.array.length-1];
+        var vectorx=(b[0]-a[0])
+        var vectory=(b[1]-a[1])
+        // we take the vector of the previous moove
+
+        // we apply a rotation matrix
+        var x=vectorx*Math.cos(angle)-vectory*Math.sin(angle)
+        var y=vectorx*Math.sin(angle)+vectory*Math.cos(angle)
+
+        // and add this new vector to the last coord
+        var new_x=b[0]+x
+        var new_y=b[1]+y
+
+        // print("distance",((new_x-b[0])**2+(new_y-b[1])**2)**0.5)
+        this.array.push([new_x,new_y]);
+      }
+
+      // we only display the last line
+      display()
+      {
+        for(var i=this.array.length-2;i<this.array.length-1;i++)
+        {
+          line(this.array[i][0],this.array[i][1],this.array[i+1][0],this.array[i+1][1]);
+        }
+      }
+
+      // display line foreach player
+      static display_lines(player_lines){
+        for (var i=0;i<player_lines.length;i++)
+        {
+          stroke(player.player_colour[i]);
+          strokeWeight(player.player_width[i]);
+          player_lines[i].display();
+        }
+      }
+
+      // check if the game is ended
+      static is_ended(player_lines)
+      {
+        // check if someone get trough a wall
+        for (var i=0;i<player_lines.length;i++)
+        {
+          for (var k=0;k<2;k++)
+          {
+            var x=player_lines[i].array[player_lines[i].array.length-1][k];
+            if (x<=0 || x>=game.canvas_dimension)
+            {
+              print("Hit wall");
+              return true;
+            }
+          }
+        }
+
+        // check if a line get trough another one or itself
+        for (var i=0;i<player_lines.length;i++)
+        {
+          for (var j=0;j<player_lines.length;j++)
+          {
+            for(var k=0;k<player_lines[j].array.length;k++)
+            {
+              var x = player_lines[i].array[player_lines[i].array.length-1]
+              var y = player_lines[j].array[k]
+              if (Math.abs(x[0]-y[0])<player.player_width[i]*0.8 && (Math.abs(x[1]-y[1])<player.player_width[i]*0.8))
+              {
+                if(i==j && k<player_lines[j].array.length-player.player_width[i]-1)
+                {
+                  print('Hit self');
+                  return i;
+                }
+                else if (i!=j)
+                {
+                  print("Hit other");
+                  return i;
+                }
+              }
+            }
+          }
+        }
+        return -1;
+      }
+    }
+    
+  </script>
+</html>
