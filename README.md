@@ -12,7 +12,9 @@ https://github.com/beaupletga/Curve-Fever
     - Flashing lights
     - Thick/thin
     - Switch colours
-- Restrict starting angles depending on position
+    - Shrinking dimensions of canvas
+    - No border
+- Restrict starting angles depending on position --> Fixed
 - Nice UI
 - Players can input controls, colours etc
 - Scoring

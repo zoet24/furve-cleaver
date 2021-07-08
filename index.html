@@ -13,7 +13,7 @@
       <div id="curveArena">
       </div>
       <div>
-        <button onclick="start(2)">Start</button>
+        <button onclick="start(3)">Start</button>
       </div>
     </div>
 
@@ -31,7 +31,10 @@
   <script>
     // Set up canvas
     var game = {
-      canvas_dimension: 600,
+      canvas_dimension: 400,
+
+      // If game is active
+      started: false,
     }
 
     function setup() {
@@ -46,46 +49,61 @@
 
     var player = {
       // Speed of player
-      speed: [1, 1],
+      speed: [1, 1, 1],
 
       // How quickly player can turn
-      angle: [2, 2],
+      angle: [2, 2, 2],
 
       // Keyboard controls
-      keys: ['LEFT_ARROW','RIGHT_ARROW','Q','S'],
-      keys_code: [[37,39],[81,83]],
+      keys: ['LEFT_ARROW','RIGHT_ARROW','A','D','J','L'],
+      keys_code: [[37,39],[65,68],[74,76]],
 
       // Player aesthetic
-      player_colour: ["red", "blue"],
-      player_width: [10, 15],
-      
-      // If game is active
-      started: false,
+      player_colour: ["red", "blue", "green"],
+      player_width: [5, 5, 5],      
+    }
+
+    function genAngle(min, max) {
+      return ((Math.random() * (max - min) ) + min);
     }
 
     // Pass in number of players from UI and generate random position and angles for each player
     function start(num_players) {
-      if (player.started == false) {
+      if (game.started == false) {
         players = [];
           for (var i = 0;i < num_players;i++) {
             x = Math.floor(Math.random() * 0.8*game.canvas_dimension) + 1;
             y = Math.floor(Math.random() * 0.8*game.canvas_dimension) + 1;
-            angle = Math.floor(Math.random() * 360);
-            // x = -0.8*game.canvas_dimension
-            // y = -0.8*game.canvas_dimension
-            // angle = 90
+
+            if ((x >= 0) && (x < (0.5*game.canvas_dimension)) && (y >= 0) && (y < (0.5*game.canvas_dimension))) {
+              min = 1.75
+              max = 2.25
+            } else if ((x >= 0.5*game.canvas_dimension) && (x <= (game.canvas_dimension)) && (y >= 0) && (y < (0.5*game.canvas_dimension))) {
+              min = 0.25
+              max = 0.75
+            } else if ((x >= 0) && (x < (0.5*game.canvas_dimension)) && (y >= (0.5*game.canvas_dimension)) && (y < (game.canvas_dimension))) {
+              min = 1.25
+              max = 1.75
+            } else {
+              min = 0.75
+              max = 1.25
+            }
+
+            angleMultiplier = genAngle(min, max)
+            angle = Math.PI * angleMultiplier
+
             line_tmp = new Line(x,y);
             line_tmp.add_position(x+player.speed[i],y+player.speed[i]);
             line_tmp.move(angle);
             players.push(line_tmp);
           }
-          player.started = true;
+          game.started = true;
         }
       }
 
     // Change path of player if keypad is pressed; if not continue in a straight line
     function draw() {
-      if (player.started) {
+      if (game.started) {
         for (var i=0;i<players.length;i++) {
           if (keyIsDown(player.keys_code[i][0])) {
             players[i].move(-player.angle[i]* Math.PI / 180);
@@ -99,7 +117,7 @@
         }
         var lose = Line.is_ended(players);
         if (lose != -1) {
-          player.started = false;
+          game.started = false;
         }
         Line.display_lines(players);
       }
