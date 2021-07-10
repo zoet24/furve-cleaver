@@ -63,34 +63,69 @@
       player_width: [5, 5, 5],      
     }
 
-    function genAngle(min, max) {
-      return ((Math.random() * (max - min) ) + min);
+    function genPosition(positionMin, positionMax) {
+      return (Math.floor(Math.random() * (positionMax - positionMin) ) + positionMin);
+    }
+
+    function genAngle(angleMin, angleMax) {
+      return ((Math.random() * (angleMax - angleMin) ) + angleMin);
     }
 
     // Pass in number of players from UI and generate random position and angles for each player
     function start(num_players) {
       if (game.started == false) {
         players = [];
-          for (var i = 0;i < num_players;i++) {
-            x = Math.floor(Math.random() * 0.8*game.canvas_dimension) + 1;
-            y = Math.floor(Math.random() * 0.8*game.canvas_dimension) + 1;
+        clearance = 0.95;
 
-            if ((x >= 0) && (x < (0.5*game.canvas_dimension)) && (y >= 0) && (y < (0.5*game.canvas_dimension))) {
-              min = 1.75
-              max = 2.25
-            } else if ((x >= 0.5*game.canvas_dimension) && (x <= (game.canvas_dimension)) && (y >= 0) && (y < (0.5*game.canvas_dimension))) {
-              min = 0.25
-              max = 0.75
-            } else if ((x >= 0) && (x < (0.5*game.canvas_dimension)) && (y >= (0.5*game.canvas_dimension)) && (y < (game.canvas_dimension))) {
-              min = 1.25
-              max = 1.75
+          for (var i = 0;i < num_players;i++) {
+            // Separate starting positions into separate quadrants to prevent early collisions
+            if (i == 0) {
+              positionXMin = 0;
+              positionXMax = clearance * (0.5 * game.canvas_dimension);
+              positionYMin = 0;
+              positionYMax = clearance * (0.5 * game.canvas_dimension);
+            } else if (i == 1) {
+              positionXMin = clearance * (0.5 * game.canvas_dimension);
+              positionXMax = clearance * (game.canvas_dimension);
+              positionYMin = clearance * (0.5 * game.canvas_dimension);
+              positionYMax = clearance * (game.canvas_dimension);
+            } else if (i == 2) {
+              positionXMin = clearance * (0.5 * game.canvas_dimension);
+              positionXMax = clearance * (game.canvas_dimension);
+              positionYMin = 0;
+              positionYMax = clearance * (0.5 * game.canvas_dimension);
+            } else if (i == 3) {
+              positionXMin = 0;
+              positionXMax = clearance * (0.5 * game.canvas_dimension);
+              positionYMin = clearance * (0.5 * game.canvas_dimension);
+              positionYMax = clearance * (game.canvas_dimension);
             } else {
-              min = 0.75
-              max = 1.25
+              positionXMin = 0;
+              positionXMax = clearance * (game.canvas_dimension);
+              positionYMin = 0;
+              positionYMax = clearance * (game.canvas_dimension);
             }
 
-            angleMultiplier = genAngle(min, max)
-            angle = Math.PI * angleMultiplier
+            x = genPosition(positionXMin, positionXMax)
+            y = genPosition(positionYMin, positionYMax)
+
+            // Change orientation of initial movement away from canvas walls
+            if ((x >= 0) && (x < (0.5*game.canvas_dimension)) && (y >= 0) && (y < (0.5*game.canvas_dimension))) {
+              angleMin = 1.75
+              angleMax = 2.25
+            } else if ((x >= 0.5*game.canvas_dimension) && (x <= (game.canvas_dimension)) && (y >= 0) && (y < (0.5*game.canvas_dimension))) {
+              angleMin = 0.25
+              angleMax = 0.75
+            } else if ((x >= 0) && (x < (0.5*game.canvas_dimension)) && (y >= (0.5*game.canvas_dimension)) && (y < (game.canvas_dimension))) {
+              angleMin = 1.25
+              angleMax = 1.75
+            } else {
+              angleMin = 0.75
+              angleMax = 1.25
+            }
+
+            angleMultiplier = genAngle(angleMin, angleMax);
+            angle = Math.PI * angleMultiplier;
 
             line_tmp = new Line(x,y);
             line_tmp.add_position(x+player.speed[i],y+player.speed[i]);
