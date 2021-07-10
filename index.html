@@ -5,15 +5,24 @@
     <link href="https://fonts.googleapis.com/css?family=Antic+Slab" rel="stylesheet">
   </head>
 
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.js"></script>
 
   <body>
 
     <div class="container">
-      <div id="curveArena">
-      </div>
-      <div>
+      <div id="gameControls">
+        <div id="player-score-0">Score: 0</div>
+        <div id="player-score-1">Score: 0</div>
+        <div id="player-score-2">Score: 0</div>
+        <div id="player-score-3">Score: 0</div>
+        <div id="player-score-4">Score: 0</div>
+        <div id="player-score-5">Score: 0</div>
+        <div id="player-score-6">Score: 0</div>
+        <div id="player-score-7">Score: 0</div>
         <button onclick="start(8)">Start</button>
+      </div>
+      <div id="containerCurve">
       </div>
     </div>
 
@@ -24,6 +33,11 @@
         left: 50%;
         transform: translate(-50%, -50%);
         text-align: center;
+        display: flex;
+      }
+
+      #gameControls {
+        width: 100px;
       }
     </style>
   </body>
@@ -37,20 +51,6 @@
       started: false,
     }
 
-    function setup() {
-      canvas = createCanvas(game.canvas_dimension, game.canvas_dimension);
-      colorMode(HSB);
-      background('black');
-      canvas.parent('curveArena');
-    }
-
-    function clearBoard() {
-      canvas = document.getElementById("defaultCanvas0");
-      canvas_ctx = canvas.getContext("2d");
-      canvas_ctx.fillStyle = 'black';
-      canvas_ctx.fillRect(0, 0, game.canvas_dimension, game.canvas_dimension);
-    }
-
     // Set up player variables
     var players = [];
 
@@ -60,6 +60,9 @@
 
       // How quickly player can turn
       angle: [2, 2, 2, 2, 2, 2, 2, 2],
+
+      // Player score
+      score: [0, 0, 0, 0, 0, 0, 0, 0],
 
       // Keyboard controls
       keys: ['LEFT_ARROW','RIGHT_ARROW','A','D','J','L', 'Q', 'E', 'U', 'O', 'Z', 'C', 'B', 'M', '8', '0'],
@@ -71,6 +74,20 @@
 
       // If player is active
       started: [],
+    }
+
+    function setup() {
+      canvas = createCanvas(game.canvas_dimension, game.canvas_dimension);
+      colorMode(HSB);
+      background('black');
+      canvas.parent('containerCurve');
+    }
+
+    function clearBoard() {
+      canvas = document.getElementById("defaultCanvas0");
+      canvas_ctx = canvas.getContext("2d");
+      canvas_ctx.fillStyle = 'black';
+      canvas_ctx.fillRect(0, 0, game.canvas_dimension, game.canvas_dimension);
     }
 
     function genPosition(positionMin, positionMax) {
@@ -93,30 +110,30 @@
             player.started.push(true);
 
             // Separate starting positions into separate quadrants to prevent early collisions
-            if (i == 0) {
-              positionXMin = 0;
+            if ((i == 0) || (i == 4)) {
+              positionXMin = (1 - clearance) * game.canvas_dimension;
               positionXMax = clearance * (0.5 * game.canvas_dimension);
-              positionYMin = 0;
+              positionYMin = (1 - clearance) * game.canvas_dimension;
               positionYMax = clearance * (0.5 * game.canvas_dimension);
-            } else if (i == 1) {
+            } else if ((i == 1) || (i == 5)) {
               positionXMin = clearance * (0.5 * game.canvas_dimension);
               positionXMax = clearance * (game.canvas_dimension);
               positionYMin = clearance * (0.5 * game.canvas_dimension);
               positionYMax = clearance * (game.canvas_dimension);
-            } else if (i == 2) {
+            } else if ((i == 2) || (i == 6)) {
               positionXMin = clearance * (0.5 * game.canvas_dimension);
               positionXMax = clearance * (game.canvas_dimension);
-              positionYMin = 0;
+              positionYMin = (1 - clearance) * game.canvas_dimension;
               positionYMax = clearance * (0.5 * game.canvas_dimension);
-            } else if (i == 3) {
-              positionXMin = 0;
+            } else if ((i == 3) || (i == 7)) {
+              positionXMin = (1 - clearance) * game.canvas_dimension;
               positionXMax = clearance * (0.5 * game.canvas_dimension);
               positionYMin = clearance * (0.5 * game.canvas_dimension);
               positionYMax = clearance * (game.canvas_dimension);
             } else {
-              positionXMin = 0;
+              positionXMin = (1 - clearance) * game.canvas_dimension;
               positionXMax = clearance * (game.canvas_dimension);
-              positionYMin = 0;
+              positionYMin = (1 - clearance) * game.canvas_dimension;
               positionYMax = clearance * (game.canvas_dimension);
             }
 
@@ -231,6 +248,8 @@
               print("Hit wall");
               player.started[i] = false;
               if (player.started.filter(Boolean).length == 1) {
+                player.score[i] += 1;
+                $(`#player-score-${i}`).text(`Score: ${player.score[i]}`);
                 return true;
               }
             }
@@ -248,6 +267,8 @@
                   print('Hit self');
                   player.started[i] = false;
                   if (player.started.filter(Boolean).length == 1) {
+                    player.score[i] += 1;
+                    $(`#player-score-${i}`).text(`Score: ${player.score[i]}`);
                     return i;
                   }
                 }
@@ -256,6 +277,8 @@
                   print("Hit other");
                   player.started[i] = false;
                   if (player.started.filter(Boolean).length == 1) {
+                    player.score[i] += 1;
+                    $(`#player-score-${i}`).text(`Score: ${player.score[i]}`);
                     return i;
                   }
                 }
