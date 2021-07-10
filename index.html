@@ -44,6 +44,13 @@
       canvas.parent('curveArena');
     }
 
+    function clearBoard() {
+      canvas = document.getElementById("defaultCanvas0");
+      canvas_ctx = canvas.getContext("2d");
+      canvas_ctx.fillStyle = 'black';
+      canvas_ctx.fillRect(0, 0, game.canvas_dimension, game.canvas_dimension);
+    }
+
     // Set up player variables
     var players = [];
 
@@ -76,6 +83,7 @@
       if (game.started == false) {
         players = [];
         clearance = 0.95;
+        clearBoard();
 
           for (var i = 0;i < num_players;i++) {
             // Separate starting positions into separate quadrants to prevent early collisions
