@@ -13,7 +13,7 @@
       <div id="curveArena">
       </div>
       <div>
-        <button onclick="start(3)">Start</button>
+        <button onclick="start(8)">Start</button>
       </div>
     </div>
 
@@ -56,18 +56,21 @@
 
     var player = {
       // Speed of player
-      speed: [1, 1, 1],
+      speed: [1, 1, 1, 1, 1, 1, 1, 1],
 
       // How quickly player can turn
-      angle: [2, 2, 2],
+      angle: [2, 2, 2, 2, 2, 2, 2, 2],
 
       // Keyboard controls
-      keys: ['LEFT_ARROW','RIGHT_ARROW','A','D','J','L'],
-      keys_code: [[37,39],[65,68],[74,76]],
+      keys: ['LEFT_ARROW','RIGHT_ARROW','A','D','J','L', 'Q', 'E', 'U', 'O', 'Z', 'C', 'B', 'M', '8', '0'],
+      keys_code: [[37,39],[65,68],[74,76],[81,69],[85,79],[90,67],[66,77],[56,48]],
 
       // Player aesthetic
-      player_colour: ["red", "blue", "green"],
-      player_width: [5, 5, 5],      
+      player_colour: ["red", "blue", "green", "yellow", "pink", "white", "orange", "lime"],
+      player_width: [5, 5, 5, 5, 5, 5, 5, 5],
+
+      // If player is active
+      started: [],
     }
 
     function genPosition(positionMin, positionMax) {
@@ -82,10 +85,13 @@
     function start(num_players) {
       if (game.started == false) {
         players = [];
+        player.started = [];
         clearance = 0.95;
         clearBoard();
 
           for (var i = 0;i < num_players;i++) {
+            player.started.push(true);
+
             // Separate starting positions into separate quadrants to prevent early collisions
             if (i == 0) {
               positionXMin = 0;
@@ -140,7 +146,9 @@
             line_tmp.move(angle);
             players.push(line_tmp);
           }
+
           game.started = true;
+
         }
       }
 
@@ -148,14 +156,16 @@
     function draw() {
       if (game.started) {
         for (var i=0;i<players.length;i++) {
-          if (keyIsDown(player.keys_code[i][0])) {
-            players[i].move(-player.angle[i]* Math.PI / 180);
-          }
-          else if (keyIsDown(player.keys_code[i][1])) {
-            players[i].move(player.angle[i]* Math.PI / 180);
-          }
-          else {
-            players[i].move(0);
+          if (player.started[i] == true) {
+            if (keyIsDown(player.keys_code[i][0])) {
+              players[i].move(-player.angle[i]* Math.PI / 180);
+            }
+            else if (keyIsDown(player.keys_code[i][1])) {
+              players[i].move(player.angle[i]* Math.PI / 180);
+            }
+            else {
+              players[i].move(0);
+            }
           }
         }
         var lose = Line.is_ended(players);
@@ -219,7 +229,10 @@
             var x = player_lines[i].array[player_lines[i].array.length-1][k];
             if (x <= 0 || x >= game.canvas_dimension) {
               print("Hit wall");
-              return true;
+              player.started[i] = false;
+              if (player.started.filter(Boolean).length == 1) {
+                return true;
+              }
             }
           }
         }
@@ -233,12 +246,18 @@
                 // Check if player has hit itself
                 if (i == j && k < player_lines[j].array.length-player.player_width[i]-1) {
                   print('Hit self');
-                  return i;
+                  player.started[i] = false;
+                  if (player.started.filter(Boolean).length == 1) {
+                    return i;
+                  }
                 }
                 // Check if player has hit other player
                 else if (i != j) {
                   print("Hit other");
-                  return i;
+                  player.started[i] = false;
+                  if (player.started.filter(Boolean).length == 1) {
+                    return i;
+                  }
                 }
               }
             }

@@ -18,6 +18,7 @@ https://github.com/beaupletga/Curve-Fever
 - Nice UI
 - Players can input controls, colours etc
 - Scoring
-- When one player dies it stops their game but not everyone else
-- Wipe canvas in between games
+- When one player dies it stops their game but not everyone else --> Fixed
+- Wipe canvas in between games --> Fixed
 - Changing size of canvas
+- Generate in different positions for greater number of players (add in modulo condition on position generator?)
