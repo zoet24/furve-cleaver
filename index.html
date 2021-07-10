@@ -1,354 +1,57 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Furve Cleaver</title>
-    <link href="https://fonts.googleapis.com/css?family=Antic+Slab" rel="stylesheet">
-  </head>
+   <head>
+      <title>Furve Cleaver</title>
+      <link rel="stylesheet" type="text/css" href="assets/css/style.css" />
+   </head>
 
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.js"></script>
-
-  <body>
-    <div class="container">
-      <div id="gameControls">
-        <div class="player-container">
-          <div class="player-colour" id="player-colour-0"></div>
-          <div id="player-score-0">Score: 0</div>
-        </div>
-        <div class="player-container">
-          <div class="player-colour" id="player-colour-1"></div>
-          <div id="player-score-1">Score: 0</div>
-        </div>
-        <div class="player-container">
-          <div class="player-colour" id="player-colour-2"></div>
-          <div id="player-score-2">Score: 0</div>
-        </div>
-        <div class="player-container">
-          <div class="player-colour" id="player-colour-3"></div>
-          <div id="player-score-3">Score: 0</div>
-        </div>
-        <div class="player-container">
-          <div class="player-colour" id="player-colour-4"></div>
-          <div id="player-score-4">Score: 0</div>
-        </div>
-        <div class="player-container">
-          <div class="player-colour" id="player-colour-5"></div>
-          <div id="player-score-5">Score: 0</div>
-        </div>
-        <div class="player-container">
-          <div class="player-colour" id="player-colour-6"></div>
-          <div id="player-score-6">Score: 0</div>
-        </div>
-        <div class="player-container">
-          <div class="player-colour" id="player-colour-7"></div>
-          <div id="player-score-7">Score: 0</div>
-        </div>
-        <button onclick="start(8)">Start</button>
+   <script src="assets/js/setup.js"></script>
+   <script src="assets/js/powerups.js"></script>
+   <script src="assets/js/curve.js"></script>
+   
+   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.js"></script>
+   
+   <body>
+      <div class="container">
+         <div id="gameControls">
+            <div class="player-container">
+               <div class="player-colour" id="player-colour-0"></div>
+               <div id="player-score-0">Score: 0</div>
+            </div>
+            <div class="player-container">
+               <div class="player-colour" id="player-colour-1"></div>
+               <div id="player-score-1">Score: 0</div>
+            </div>
+            <div class="player-container">
+               <div class="player-colour" id="player-colour-2"></div>
+               <div id="player-score-2">Score: 0</div>
+            </div>
+            <div class="player-container">
+               <div class="player-colour" id="player-colour-3"></div>
+               <div id="player-score-3">Score: 0</div>
+            </div>
+            <div class="player-container">
+               <div class="player-colour" id="player-colour-4"></div>
+               <div id="player-score-4">Score: 0</div>
+            </div>
+            <div class="player-container">
+               <div class="player-colour" id="player-colour-5"></div>
+               <div id="player-score-5">Score: 0</div>
+            </div>
+            <div class="player-container">
+               <div class="player-colour" id="player-colour-6"></div>
+               <div id="player-score-6">Score: 0</div>
+            </div>
+            <div class="player-container">
+               <div class="player-colour" id="player-colour-7"></div>
+               <div id="player-score-7">Score: 0</div>
+            </div>
+            <button onclick="start(2)">Start</button>
+         </div>
+         <div id="containerCurve">
+           <div id="powerup"></div>
+         </div>
       </div>
-      <div id="containerCurve">
-      </div>
-    </div>
-
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200&display=swap');
-
-      body {
-        font-family: 'Poppins', sans-serif;
-      }
-
-      .container {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        display: flex;
-      }
-
-      #gameControls {
-        width: 200px;
-
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .player-container {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .player-colour {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        border: black 1px solid;
-        margin: 5px;
-      }
-    </style>
-  </body>
-
-  <script>
-    // Set up canvas
-    var game = {
-      canvas_dimension: 400,
-
-      // If game is active
-      started: false,
-    };
-
-    // Set up player variables
-    var players = [];
-
-    var player = {
-      // Speed of player
-      speed: [1, 1, 1, 1, 1, 1, 1, 1],
-
-      // How quickly player can turn
-      angle: [2, 2, 2, 2, 2, 2, 2, 2],
-
-      // Player score
-      score: [0, 0, 0, 0, 0, 0, 0, 0],
-
-      // Keyboard controls
-      keys: ['LEFT_ARROW','RIGHT_ARROW','A','D','J','L', 'Q', 'E', 'U', 'O', 'Z', 'C', 'B', 'M', '8', '0'],
-      keys_code: [[37,39],[65,68],[74,76],[81,69],[85,79],[90,67],[66,77],[56,48]],
-
-      // Player aesthetic
-      player_colour: ["red", "blue", "green", "yellow", "pink", "white", "orange", "lime"],
-      player_width: [5, 5, 5, 5, 5, 5, 5, 5],
-
-      // If player is active
-      started: [],
-    };
-
-    // Setup canvas
-    function setup() {
-      canvas = createCanvas(game.canvas_dimension, game.canvas_dimension);
-      colorMode(HSB);
-      background('black');
-      canvas.parent('containerCurve');
-    }
-
-    // Change swatches to player colours
-    onload = function () {
-      for (var i = 0;i < 8;i++) {
-        bgColour = player.player_colour[i];
-        document.getElementById(`player-colour-${i}`).setAttribute("style", `background-color: ${bgColour};`);
-      }
-    };
-
-    // Clear board between games
-    function clearBoard() {
-      canvas = document.getElementById("defaultCanvas0");
-      canvas_ctx = canvas.getContext("2d");
-      canvas_ctx.fillStyle = 'black';
-      canvas_ctx.fillRect(0, 0, game.canvas_dimension, game.canvas_dimension);
-    }
-
-    // Generate random position within canvas
-    function genPosition(positionMin, positionMax) {
-      return (Math.floor(Math.random() * (positionMax - positionMin) ) + positionMin);
-    }
-
-    // Generate random orientation within canvas
-    function genAngle(angleMin, angleMax) {
-      return ((Math.random() * (angleMax - angleMin) ) + angleMin);
-    }
-
-    // Pass in number of players from UI and generate random position and angles for each player
-    function start(num_players) {
-      if (game.started == false) {
-        players = [];
-        player.started = [];
-        clearance = 0.95;
-        clearBoard();
-
-          for (var i = 0;i < num_players;i++) {
-            player.started.push(true);
-
-            // Separate starting positions into separate quadrants to prevent early collisions
-            if (i % 4 == 0) {
-              positionXMin = (1 - clearance) * game.canvas_dimension;
-              positionXMax = clearance * (0.5 * game.canvas_dimension);
-              positionYMin = (1 - clearance) * game.canvas_dimension;
-              positionYMax = clearance * (0.5 * game.canvas_dimension);
-            } else if (i % 4 == 1) {
-              positionXMin = clearance * (0.5 * game.canvas_dimension);
-              positionXMax = clearance * (game.canvas_dimension);
-              positionYMin = clearance * (0.5 * game.canvas_dimension);
-              positionYMax = clearance * (game.canvas_dimension);
-            } else if (i % 4 == 2) {
-              positionXMin = clearance * (0.5 * game.canvas_dimension);
-              positionXMax = clearance * (game.canvas_dimension);
-              positionYMin = (1 - clearance) * game.canvas_dimension;
-              positionYMax = clearance * (0.5 * game.canvas_dimension);
-            } else if (i % 4 == 3) {
-              positionXMin = (1 - clearance) * game.canvas_dimension;
-              positionXMax = clearance * (0.5 * game.canvas_dimension);
-              positionYMin = clearance * (0.5 * game.canvas_dimension);
-              positionYMax = clearance * (game.canvas_dimension);
-            }
-
-            x = genPosition(positionXMin, positionXMax);
-            y = genPosition(positionYMin, positionYMax);
-
-            // Change orientation of initial movement away from canvas walls
-            if ((x >= 0) && (x < (0.5*game.canvas_dimension)) && (y >= 0) && (y < (0.5*game.canvas_dimension))) {
-              angleMin = 1.75;
-              angleMax = 2.25;
-            } else if ((x >= 0.5*game.canvas_dimension) && (x <= (game.canvas_dimension)) && (y >= 0) && (y < (0.5*game.canvas_dimension))) {
-              angleMin = 0.25;
-              angleMax = 0.75;
-            } else if ((x >= 0) && (x < (0.5*game.canvas_dimension)) && (y >= (0.5*game.canvas_dimension)) && (y < (game.canvas_dimension))) {
-              angleMin = 1.25;
-              angleMax = 1.75;
-            } else {
-              angleMin = 0.75;
-              angleMax = 1.25;
-            }
-
-            angleMultiplier = genAngle(angleMin, angleMax);
-            angle = Math.PI * angleMultiplier;
-
-            line_tmp = new Line(x,y);
-            line_tmp.add_position(x+player.speed[i],y+player.speed[i]);
-            line_tmp.move(angle);
-            players.push(line_tmp);
-          }
-
-          game.started = true;
-
-        }
-      }
-
-    // Change path of player if keypad is pressed; if not continue in a straight line
-    function draw() {
-      if (game.started) {
-        for (var i=0;i<players.length;i++) {
-          if (player.started[i] == true) {
-            if (keyIsDown(player.keys_code[i][0])) {
-              players[i].move(-player.angle[i]* Math.PI / 180);
-            }
-            else if (keyIsDown(player.keys_code[i][1])) {
-              players[i].move(player.angle[i]* Math.PI / 180);
-            }
-            else {
-              players[i].move(0);
-            }
-          }
-        }
-        var lose = Line.is_ended(players);
-        if (lose != -1) {
-          game.started = false;
-        }
-        Line.display_lines(players);
-      }
-    }
-
-    function score() {
-      index = player.started.indexOf(true);
-      console.log(index);
-      player.score[index] += 1;
-      $(`#player-score-${index}`).text(`Score: ${player.score[index]}`);
-    }
-
-    // Construct line with position and angle
-    class Line{
-      constructor(a,b){
-        this.array=[];
-        this.array.push([a,b]);
-      }
-
-      add_position(a,b){
-        this.array.push([a,b]);
-      }
-
-    // The player moves depending on the calculated angle
-      move(angle) {
-        var a = this.array[this.array.length-2];
-        var b = this.array[this.array.length-1];
-        var vectorx = (b[0]-a[0]);
-        var vectory = (b[1]-a[1]);
-
-        // Take the vector of the previous move and apply a rotation matrix
-        var x = vectorx*Math.cos(angle)-vectory*Math.sin(angle);
-        var y = vectorx*Math.sin(angle)+vectory*Math.cos(angle);
-
-        // Add this new vector to the last coordinate
-        var new_x = b[0]+x;
-        var new_y = b[1]+y;
-        
-        this.array.push([new_x,new_y]);
-      }
-
-      // Display the last line
-      display() {
-        for(var i=this.array.length-2;i<this.array.length-1;i++) {
-          line(this.array[i][0],this.array[i][1],this.array[i+1][0],this.array[i+1][1]);
-        }
-      }
-
-      // Display line for each player
-      static display_lines(player_lines){
-        for (var i = 0;i < player_lines.length;i++) {
-          stroke(player.player_colour[i]);
-          strokeWeight(player.player_width[i]);
-          player_lines[i].display();
-        }
-      }
-
-      // Check if the game is ended
-      static is_ended(player_lines) {
-        // Check if player has hit wall
-        for (var i = 0;i < player_lines.length;i++) {
-          for (var k = 0;k < 2;k++) {
-            var x = player_lines[i].array[player_lines[i].array.length-1][k];
-            if (x <= 0 || x >= game.canvas_dimension) {
-              print("Hit wall");
-              player.started[i] = false;
-              if (player.started.filter(Boolean).length == 1) {
-                score();
-                return true;
-              }
-            }
-          }
-        }
-        // Check if player has hit itself/another player
-        for (var i = 0;i < player_lines.length;i++) {
-          for (var j = 0;j < player_lines.length;j++) {
-            for (var k = 0;k < player_lines[j].array.length;k++) {
-              var x = player_lines[i].array[player_lines[i].array.length-1];
-              var y = player_lines[j].array[k];
-              if (Math.abs(x[0]-y[0])<player.player_width[i]*0.8 && (Math.abs(x[1]-y[1])<player.player_width[i]*0.8)) {
-                // Check if player has hit itself
-                if (i == j && k < player_lines[j].array.length-player.player_width[i]-1) {
-                  print('Hit self');
-                  player.started[i] = false;
-                  if (player.started.filter(Boolean).length == 1) {
-                    score();
-                    return i;
-                  }
-                }
-                // Check if player has hit other player
-                else if (i != j) {
-                  print("Hit other");
-                  player.started[i] = false;
-                  if (player.started.filter(Boolean).length == 1) {
-                    score();
-                    return i;
-                  }
-                }
-              }
-            }
-          }
-        }
-        return -1;
-      }
-    }
-    
-  </script>
+   </body>
 </html>
